@@ -1,0 +1,13 @@
+*.parquet
+*.npy
+saliency_scores_2/
+__pycache__/
+.DS_Store
+*.pt
+*.h5
+*.meme
+*.tsv
+modisco_files/
+final_models/
+__pycache__/
+.DS_Store
