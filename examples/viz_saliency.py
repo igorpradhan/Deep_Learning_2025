@@ -35,7 +35,7 @@ class SaliencyModel(nn.Module):
         self.head = head
         self.gradients = None
         
-        # REGISTER HOOK
+        
         self.embedding_layer = self._find_embedding_layer()
         print(f"Hook attached to: {self.embedding_layer}")
         self.hook_handle = self.embedding_layer.register_full_backward_hook(self._hook_fn)
@@ -45,7 +45,7 @@ class SaliencyModel(nn.Module):
         if hasattr(self.backbone, "backbone"):
             model_to_search = self.backbone.backbone
         
-        # Try standard names
+        
         if hasattr(model_to_search, "embeddings"): return model_to_search.embeddings
         if hasattr(model_to_search, "word_embeddings"): return model_to_search.word_embeddings
         if hasattr(model_to_search, "wte"): return model_to_search.wte

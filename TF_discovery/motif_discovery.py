@@ -41,10 +41,10 @@ pos_patterns, neg_patterns = modiscolite.tfmodisco.TFMoDISco(
     verbose=True
 )
 
-print("💾 Saving results...")
+print("Saving results...")
 with open(OUT_PKL, "wb") as f:
     pickle.dump((pos_patterns, neg_patterns), f)
 
 n_pos = len(pos_patterns) if pos_patterns else 0
 n_neg = len(neg_patterns) if neg_patterns else 0
-print(f"✅ Done! Found {n_pos} positive motifs and {n_neg} negative motifs.")
+print(f"Done! Found {n_pos} positive motifs and {n_neg} negative motifs.")

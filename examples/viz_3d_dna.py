@@ -98,8 +98,6 @@ def generate_chunky_helix(visual_points, loop_radius=100, helix_radius=12, num_t
     bny = tz*nx - tx*nz
     bnz = tx*ny - ty*nx
     
-    # 3. Create Two Strands
-    # Twist angle
     theta = np.linspace(0, num_twists * 2 * np.pi, visual_points)
     
     def get_strand_coords(phase_offset):
@@ -119,7 +117,7 @@ def generate_chunky_helix(visual_points, loop_radius=100, helix_radius=12, num_t
     return strand1, strand2
 
 def plot_molecular_dna(full_scores, row_idx, e_range, p_range):
-    print(f"🎨 Generating Molecular-Style DNA Plot for Sample {row_idx}...")
+    print(f" Generating Molecular-Style DNA Plot for Sample {row_idx}...")
     
     # --- 1. Downsample Data (The "Chunky" Fix) ---
     # We condense 65,536 points into ~800 visual beads so we can see the helix
@@ -138,9 +136,6 @@ def plot_molecular_dna(full_scores, row_idx, e_range, p_range):
     # --- 2. Generate Geometry ---
     (x1, y1, z1), (x2, y2, z2) = generate_chunky_helix(VISUAL_POINTS, helix_radius=8, num_twists=12)
     
-    # --- 3. Setup Colors ---
-    # Normalize scores for glowing effect
-    # We use a non-linear scaling (power of 2) to make high scores REALLY pop
     norm_scores = (visual_scores - visual_scores.min()) / (visual_scores.max() - visual_scores.min() + 1e-9)
     
     # Create Colormap (Dark Blue -> Purple -> Red -> Yellow -> White)
@@ -173,31 +168,28 @@ def plot_molecular_dna(full_scores, row_idx, e_range, p_range):
     # B) Plot the Backbones (Space Filling "Atoms")
     # Sugar-Phosphate backbone is usually gray/neutral, but we will make it glow slightly
     
-    # Size varies by importance (Hot regions explode)
     sizes = 20 + 200 * (norm_scores ** 2)
     
-    # Strand 1 Atoms
+
     ax.scatter(x1, y1, z1, c=point_colors, s=sizes, edgecolors='none', alpha=0.8, depthshade=True)
-    # Strand 2 Atoms
+
     ax.scatter(x2, y2, z2, c=point_colors, s=sizes, edgecolors='none', alpha=0.8, depthshade=True)
 
-    # --- 5. Highlights ---
     def add_label(start, end, text, color):
         mid = (start + end) // 2
-        # Offset label slightly up
         ax.text(x1[mid], y1[mid], z1[mid]+15, text, color=color, fontsize=20, fontweight='bold', ha='center')
         
         # Draw a "Highlight Tube" around the backbone for these regions
         ax.plot(x1[start:end], y1[start:end], z1[start:end], color=color, linewidth=8, alpha=0.6)
         ax.plot(x2[start:end], y2[start:end], z2[start:end], color=color, linewidth=8, alpha=0.6)
 
-    add_label(v_e_start, v_e_end, "Enhancer", "#00ffff") # Cyan
-    add_label(v_p_start, v_p_end, "Promoter", "#00ff00") # Lime
+    add_label(v_e_start, v_e_end, "Enhancer", "#00ffff") 
+    add_label(v_p_start, v_p_end, "Promoter", "#00ff00") 
 
     # --- 6. Final Polish ---
     plt.title(f"Predicted Chromatin Loop Interaction\n(Sample #{row_idx})", color='white', fontsize=22)
     
-    # Tight layout ensures we don't save huge black borders
+    
     plt.tight_layout()
     
     filename = f"dna_molecular_3d_{row_idx}.png"
@@ -205,9 +197,9 @@ def plot_molecular_dna(full_scores, row_idx, e_range, p_range):
     print(f"✅ Saved Molecular Plot to {filename}")
     plt.close()
 
-# --- MAIN EXECUTION ---
+
 if __name__ == "__main__":
-    print(f"🚀 Starting Molecular Visualization on {DEVICE}...")
+    print(f"Starting Molecular Visualization on {DEVICE}...")
     
     if not os.path.exists(PARQUET_PATH): PARQUET_PATH = f"work_dir/DL_2025 copy/{PARQUET_PATH}"
     df = pd.read_parquet(PARQUET_PATH)
@@ -224,11 +216,11 @@ if __name__ == "__main__":
     raw_head.load_state_dict(checkpoint['head'])
     model = SaliencyModel(raw_backbone, raw_head).to(DEVICE)
     
-    # Search Loop
+
     found = 0
     start_index = 0
     
-    print("🔍 Searching for a high-confidence positive...")
+    print("Searching for a high-confidence positive...")
     
     for i in range(start_index, len(df)):
         torch.cuda.empty_cache()
@@ -262,15 +254,15 @@ if __name__ == "__main__":
         try:
             scores, conf = get_saliency_hook(model, inputs, em, pm)
             
-            if conf > 0.85: # High confidence
+            if conf > 0.85: 
                 e_range = (int(row['enh_rel_start']), int(row['enh_rel_end']))
                 p_range = (int(row['prom_rel_start']), int(row['prom_rel_end']))
                 
-                # 🎨 GENERATE PLOT
+                
                 plot_molecular_dna(scores[0], i, e_range, p_range)
                 
                 found += 1
-                if found >= 1: break # Just 1 good image
+                if found >= 1: break
 
         except RuntimeError as e:
             if "out of memory" in str(e): torch.cuda.empty_cache()

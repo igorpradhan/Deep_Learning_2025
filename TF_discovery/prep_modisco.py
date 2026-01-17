@@ -11,7 +11,7 @@ OUTPUT_FILE = "modisco_windows_200bp.h5"
 SEQ_LEN = 65536
 WIN = 200
 TOPK = 10
-MIN_GAP = 200  # enforce non-overlap
+MIN_GAP = 200  
 
 BASE_TO_IDX = {'A':0,'C':1,'G':2,'T':3}
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         if scores_1d.shape[0] != SEQ_LEN:
             continue
 
-        # fetch 64kb sequence once
+
         try:
             seq = genome[chrom][start0:start0+SEQ_LEN].seq.upper()
         except KeyError:
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         if len(seq) < SEQ_LEN:
             seq += "N"*(SEQ_LEN-len(seq))
 
-        # choose top windows
+        
         win_starts = pick_topk_windows(scores_1d, win=WIN, topk=TOPK, min_gap=MIN_GAP)
         if not win_starts:
             continue
@@ -72,17 +72,17 @@ if __name__ == "__main__":
         for ws in win_starts:
             we = ws + WIN
             seq_win = seq[ws:we]
-            oh = one_hot_encode(seq_win)                   # (200,4)
-            contrib = oh * scores_1d[ws:we, None]          # (200,4)
+            oh = one_hot_encode(seq_win)                 
+            contrib = oh * scores_1d[ws:we, None]        
 
-            # center per-window (gives + and - values)
+            
             contrib = contrib - contrib.mean()
 
             all_onehot.append(oh)
             all_contrib.append(contrib)
 
-    X = np.stack(all_onehot).astype(np.float32)   # (Nwin,200,4)
-    C = np.stack(all_contrib).astype(np.float32)  # (Nwin,200,4)
+    X = np.stack(all_onehot).astype(np.float32)   
+    C = np.stack(all_contrib).astype(np.float32)  
 
     print("Final:", X.shape, C.shape)
 

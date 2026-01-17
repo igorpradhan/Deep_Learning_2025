@@ -224,4 +224,4 @@ if __name__ == "__main__":
     
     # Save the index (metadata) so you know which file is which
     pd.DataFrame(saved_metadata).to_csv(f"{OUTPUT_DIR}/metadata.csv", index=False)
-    print("✅ Done! Saved all scores and metadata.")
+    print("Done! Saved all scores and metadata.")
