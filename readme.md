@@ -2,11 +2,9 @@
 
 This project investigates how **deep learning models can be trained and interpreted to identify regulatory patterns in DNA sequences**, with a focus on transcription factor (TF) binding and epigenomic signals.
 
-We fine-tune the **Caduceus** sequence model on regulatory genomics data (by unfreezing 2 layers on the backbone) and apply multiple interpretability techniques (saliency maps, Layer-wise Relevance Propagation, and TF-MoDISco) to answer the following research questions:
+We fine-tune the **Caduceus** sequence model on regulatory genomics data (by unfreezing 2 layers on the backbone) and apply multiple interpretability techniques (saliency maps, Layer-wise Relevance Propagation, and TF-MoDISco) to answer the following research question:
 
-- **RQ1:** Can a fine-tuned deep learning model accurately predict regulatory activity from DNA sequence?
-- **RQ2:** What sequence features and motifs does the model rely on for its predictions?
-- **RQ3:** Are the learned motifs biologically meaningful and consistent with known TF binding patterns?
+What sequence features and motifs does the model rely on for its predictions?
 
 The project executes these ideas through well-motivated experiments, and extensive post-hoc interpretability analyses.
 
